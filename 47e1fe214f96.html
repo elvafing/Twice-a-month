@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payslip - P2 2026-06</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Password Screen */
+        #passwordScreen {
+            background: white;
+            max-width: 450px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            text-align: center;
+        }
+
+        #passwordScreen h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        #passwordScreen p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        #passwordInput {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        #passwordInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #unlockBtn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        #unlockBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #errorMsg {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        #payslipContent {
+            display: none;
+            background: white;
+            max-width: 1000px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header .period {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .toolbar {
+            background: #f8f9fa;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .exchange-rate, .hourly-rate {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .hourly-rate:hover {
+            background: #e9ecef;
+        }
+
+        .exchange-rate strong, .hourly-rate strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: 1.5px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .lang-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .lang-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .employee-info {
+            padding: 25px 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .content {
+            padding: 35px 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .emoji {
+            font-size: 22px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .item-row.clickable {
+            cursor: pointer;
+        }
+
+        .item-row.clickable:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .item-row.clickable::after {
+            content: "ℹ️";
+            position: absolute;
+            right: 18px;
+            opacity: 0.6;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .item-row.clickable:hover::after {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .item-value {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+            margin-right: 30px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .item-row.deduction .item-value {
+            color: #e74c3c;
+        }
+
+        .item-row.subtotal {
+            background: #e9ecef;
+            border-left: 4px solid #667eea;
+        }
+
+        .item-row.subtotal .item-name,
+        .item-row.subtotal .item-value {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .item-row.total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 18px;
+            padding: 18px 20px;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .item-row.total .item-name,
+        .item-row.total .item-value {
+            color: white;
+            font-size: 19px;
+        }
+
+        .item-row.total::after {
+            display: none;
+        }
+
+        .item-row.negative .item-value {
+            color: #e74c3c;
+        }
+
+        .php-amount {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .payment-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .payment-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .payment-card .icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .payment-card .method {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .payment-card .amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            padding: 25px 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .footer strong {
+            color: #333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 650px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 0;
+            position: relative;
+            animation: modalSlide 0.3s ease;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.5);
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            color: #555;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .modal-body ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .calc-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Language Toggle */
+        .cn { display: none; }
+        body.lang-cn .en { display: none; }
+        body.lang-cn .cn { display: inline; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { padding: 25px 20px; }
+            .header h1 { font-size: 22px; }
+            .toolbar { padding: 15px 20px; flex-direction: column; align-items: stretch; }
+            .toolbar-left { justify-content: center; gap: 15px; }
+            .lang-switch { justify-content: center; }
+            .content { padding: 25px 20px; }
+            .employee-info { padding: 20px; }
+            .info-grid { grid-template-columns: 1fr; gap: 15px; }
+            .modal-content { margin: 20px auto; }
+            .modal-body { padding: 20px; }
+            .item-value { font-size: 14px; margin-right: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Screen -->
+    <div id="passwordScreen">
+        <h2>🔒
+            <span class="en">Payslip Access</span>
+            <span class="cn">工资单查看</span>
+        </h2>
+        <p>
+            <span class="en">Please enter your payslip password to view your payslip<br>(You may access your password here 👉🏻<a href="https://digiplus.sg.larksuite.com/share/base/query/shrlg1wluxcoYlyEg8fQwvx5DFd" target="_blank" style="color: #667eea; text-decoration: underline;">Lark Password List</a>)</span>
+            <span class="cn">请输入您的工资单密码查看工资单<br>（您可以在这里查看密码 👉🏻<a href="https://digiplus.sg.larksuite.com/share/base/query/shrlg1wluxcoYlyEg8fQwvx5DFd" target="_blank" style="color: #667eea; text-decoration: underline;">Lark密码列表</a>）</span>
+        </p>
+        <input
+            type="text"
+            id="passwordInput"
+            placeholder="Input your password / 输入密码"
+            onkeypress="if(event.key==='Enter') checkPassword()"
+        >
+        <button id="unlockBtn" onclick="checkPassword()">
+            <span class="en">Unlock</span>
+            <span class="cn">解锁</span>
+        </button>
+        <div id="errorMsg">
+            <span class="en">❌ Incorrect Password</span>
+            <span class="cn">❌ 密码错误</span>
+        </div>
+    </div>
+
+    <!-- Payslip Content -->
+    <div id="payslipContent">
+        <div class="header">
+            <h1>Total Gamezone Xtreme Incorporated</h1>
+            <div class="period">
+                <span class="en">Payslip Period: P2 (2026-06)</span>
+                <span class="cn">工资期间：P2 (2026-06)</span>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="exchange-rate">
+                    <span>💱</span>
+                    <span>
+                        <span class="en">Exchange Rate:</span>
+                        <span class="cn">汇率：</span>
+                        <strong>₱61.5 / USD</strong>
+                    </span>
+                </div>
+                <div class="hourly-rate" onclick="showDetail('hourlyRate')">
+                    <span>⏰</span>
+                    <span>
+                        <span class="en">Hourly Rate:</span>
+                        <span class="cn">时薪：</span>
+                        <strong id="hourlyRateDisplay">$17.73</strong>
+                        <span style="margin-left:5px;opacity:0.7;">ℹ️</span>
+                    </span>
+                </div>
+            </div>
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="setLang('en')">English</button>
+                <button class="lang-btn" onclick="setLang('cn')">中文</button>
+            </div>
+        </div>
+
+        <div class="employee-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <span class="en">Company</span>
+                        <span class="cn">公司</span>
+                    </div>
+                    <div class="info-value">Total Gamezone Xtreme Incorporated</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">
+                        <span class="en">Department</span>
+                        <span class="cn">部门</span>
+                    </div>
+                    <div class="info-value">Technology - Technology Partnership and Support</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">
+                        <span class="en">Hire Date</span>
+                        <span class="cn">入职日期</span>
+                    </div>
+                    <div class="info-value">2025-12-09</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">💰</span>
+                    <span>
+                        <span class="en">INCOME</span>
+                        <span class="cn">应发收入</span>
+                    </span>
+                </div>
+
+                <div class="item-row clickable" onclick="showDetail('basicPay')">
+                    <span class="item-name">
+                        <span class="en">Basic Pay</span>
+                        <span class="cn">基本工资</span>
+                    </span>
+                    <span class="item-value">$555.00</span>
+                </div>
+
+                <div class="item-row clickable" onclick="showDetail('postAllowance')">
+                    <span class="item-name">
+                        <span class="en">Post Allowance</span>
+                        <span class="cn">岗位津贴</span>
+                    </span>
+                    <span class="item-value">$1,295.00</span>
+                </div>
+
+                <div class="item-row clickable" onclick="showDetail('housingAllow')">
+                    <span class="item-name">
+                        <span class="en">Housing Allowance</span>
+                        <span class="cn">住房津贴</span>
+                    </span>
+                    <span class="item-value">
+                        ₱17,000.00 <span class="php-amount">(≈ $276.42)</span>
+                    </span>
+                </div>
+
+                <div class="item-row clickable" onclick="showDetail('airTicket')">
+                    <span class="item-name">
+                        <span class="en">Air Ticket</span>
+                        <span class="cn">机票补贴</span>
+                    </span>
+                    <span class="item-value">$400.00</span>
+                </div>
+
+                <div class="item-row subtotal clickable" onclick="showDetail('grossSalary')">
+                    <span class="item-name">
+                        <strong>
+                            <span class="en">GROSS SALARY</span>
+                            <span class="cn">应发工资总额</span>
+                        </strong>
+                    </span>
+                    <span class="item-value"><strong>$2,526.42</strong></span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">📉</span>
+                    <span>
+                        <span class="en">DEDUCTIONS</span>
+                        <span class="cn">扣除项</span>
+                    </span>
+                </div>
+
+                <div class="item-row deduction subtotal clickable" onclick="showDetail('totalDeduction')">
+                    <span class="item-name">
+                        <strong>
+                            <span class="en">TOTAL DEDUCTION</span>
+                            <span class="cn">总扣除额</span>
+                        </strong>
+                    </span>
+                    <span class="item-value"><strong>-$0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">💵</span>
+                    <span>
+                        <span class="en">NET PAY</span>
+                        <span class="cn">实发工资</span>
+                    </span>
+                </div>
+                <div class="item-row total clickable" onclick="showDetail('netPay')">
+                    <span class="item-name">
+                        <span class="en">NET PAY (Take Home)</span>
+                        <span class="cn">实发工资（到手）</span>
+                    </span>
+                    <span class="item-value">$2,526.42</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">🏦</span>
+                    <span>
+                        <span class="en">PAYMENT BREAKDOWN</span>
+                        <span class="cn">支付方式</span>
+                    </span>
+                </div>
+                <div class="payment-methods">
+
+                    <div class="payment-card">
+                        <div class="icon">💎</div>
+                        <div class="method">USDT</div>
+                        <div class="amount">$2,526.42</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <span class="en">
+                    <strong>*Not an official pay slip.</strong> Please keep it confidential and for your personal use only.<br>
+                    If you have any questions, please contact <strong>compensation@digiplus.com.ph</strong> or your <strong>HRBP</strong>.
+                </span>
+                <span class="cn">
+                    <strong>*非正式工资单。</strong>请妥善保管，仅供个人使用。<br>
+                    如有疑问，请联系<strong>compensation@digiplus.com.ph</strong>或您的<strong>HRBP</strong>。
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Employee data from Excel
+        const empData = {
+            empId: '102653',
+            password: 'Vuct%0C@22',
+            monthlyBasic: 3700.0,
+            basicPay: 555.0,
+            postAllowance: 1295.0,
+            otWeekday: 0.0,
+            otRestday: 0.0,
+            otHoliday: 0.0,
+            otSpecial: 0.0,
+            otNight: 0.0,
+            sickHrs: 0.0,
+            ulHrs: 0.0,
+            tardyHrs: 0.0,
+            remarkAdj: "",
+            attendanceRemark: "",
+            unpaidRemark: "",
+            tardyRemark: "",
+            othersRemark: "",
+            otherDedRemark: ""
+        };
+
+        // 计算值
+        empData.hourlyRate = Math.round(((empData.monthlyBasic * 12) / 313 / 8) * 100) / 100;
+        empData.basicMonthly = empData.basicPay * 2;
+        empData.postMonthly = empData.postAllowance * 2;
+
+        const details = {
+            hourlyRate: {
+                en: {
+                    title: "Hourly Rate",
+                    content: `<p>Calculation:<br>(Monthly Basic Pay × 12) ÷ 313 ÷ 8</p>
+                    <p style="margin-top:15px;"><strong>Your case:</strong><br>($${empData.monthlyBasic.toFixed(2)} × 12) ÷ 313 ÷ 8 = $${empData.hourlyRate.toFixed(2)}</p>
+                    <p style="margin-top:15px;">This rate is used to calculate overtime pay, sick leave conversion, and unpaid leave deductions.</p>`
+                },
+                cn: {
+                    title: "时薪",
+                    content: `<p>计算方式：<br>(月基本工资 × 12) ÷ 313 ÷ 8</p>
+                    <p style="margin-top:15px;"><strong>您的情况：</strong><br>($${empData.monthlyBasic.toFixed(2)} × 12) ÷ 313 ÷ 8 = $${empData.hourlyRate.toFixed(2)}</p>
+                    <p style="margin-top:15px;">此时薪用于计算加班费、病假折算和无薪假扣款。</p>`
+                }
+            },
+            basicPay: {
+                en: {
+                    title: "Basic Pay",
+                    content: `<p>This is 50% of your monthly basic salary, paid in this period.</p>
+                    <p style="margin-top:15px;"><strong>Monthly Basic Salary:</strong> $${empData.basicMonthly.toFixed(2)}</p>`
+                },
+                cn: {
+                    title: "基本工资",
+                    content: `<p>这是您月基本工资的50%，在本期发放。</p>
+                    <p style="margin-top:15px;"><strong>月基本工资：</strong> $${empData.basicMonthly.toFixed(2)}</p>`
+                }
+            },
+            otPay: {
+                en: {
+                    title: "OT Pay",
+                    content: `<p><strong>OT Pay Breakdown:</strong></p>
+                    <ul style="margin-top:15px;line-height:2;">
+                    ${empData.otWeekday > 0 ? `<li>Regular Weekday (125%): $${empData.hourlyRate.toFixed(2)} × 1.25 × ${empData.otWeekday.toFixed(2)} hrs = $${(empData.hourlyRate * 1.25 * empData.otWeekday).toFixed(2)}</li>` : ''}
+                    ${empData.otRestday > 0 ? `<li>Rest Day (130%): $${empData.hourlyRate.toFixed(2)} × 1.30 × ${empData.otRestday.toFixed(2)} hrs = $${(empData.hourlyRate * 1.30 * empData.otRestday).toFixed(2)}</li>` : ''}
+                    ${empData.otHoliday > 0 ? `<li>Regular Holiday (200%): $${empData.hourlyRate.toFixed(2)} × 2.00 × ${empData.otHoliday.toFixed(2)} hrs = $${(empData.hourlyRate * 2.00 * empData.otHoliday).toFixed(2)}</li>` : ''}
+                    ${empData.otSpecial > 0 ? `<li>Special Holiday (130%): $${empData.hourlyRate.toFixed(2)} × 1.30 × ${empData.otSpecial.toFixed(2)} hrs = $${(empData.hourlyRate * 1.30 * empData.otSpecial).toFixed(2)}</li>` : ''}
+                    ${empData.otNight > 0 ? `<li>Night Differential (110%): $${empData.hourlyRate.toFixed(2)} × 1.10 × ${empData.otNight.toFixed(2)} hrs = $${(empData.hourlyRate * 1.10 * empData.otNight).toFixed(2)}</li>` : ''}
+                    </ul>
+                    <p style="margin-top:15px;"><strong>Total OT Pay:</strong> $${(
+                        (empData.hourlyRate * 1.25 * empData.otWeekday) +
+                        (empData.hourlyRate * 1.30 * empData.otRestday) +
+                        (empData.hourlyRate * 2.00 * empData.otHoliday) +
+                        (empData.hourlyRate * 1.30 * empData.otSpecial) +
+                        (empData.hourlyRate * 1.10 * empData.otNight)
+                    ).toFixed(2)}</p>`
+                },
+                cn: {
+                    title: "加班费",
+                    content: `<p><strong>加班费明细：</strong></p>
+                    <ul style="margin-top:15px;line-height:2;">
+                    ${empData.otWeekday > 0 ? `<li>工作日(125%): $${empData.hourlyRate.toFixed(2)} × 1.25 × ${empData.otWeekday.toFixed(2)}小时 = $${(empData.hourlyRate * 1.25 * empData.otWeekday).toFixed(2)}</li>` : ''}
+                    ${empData.otRestday > 0 ? `<li>休息日(130%): $${empData.hourlyRate.toFixed(2)} × 1.30 × ${empData.otRestday.toFixed(2)}小时 = $${(empData.hourlyRate * 1.30 * empData.otRestday).toFixed(2)}</li>` : ''}
+                    ${empData.otHoliday > 0 ? `<li>法定节假日(200%): $${empData.hourlyRate.toFixed(2)} × 2.00 × ${empData.otHoliday.toFixed(2)}小时 = $${(empData.hourlyRate * 2.00 * empData.otHoliday).toFixed(2)}</li>` : ''}
+                    ${empData.otSpecial > 0 ? `<li>特殊节假日(130%): $${empData.hourlyRate.toFixed(2)} × 1.30 × ${empData.otSpecial.toFixed(2)}小时 = $${(empData.hourlyRate * 1.30 * empData.otSpecial).toFixed(2)}</li>` : ''}
+                    ${empData.otNight > 0 ? `<li>夜班津贴(110%): $${empData.hourlyRate.toFixed(2)} × 1.10 × ${empData.otNight.toFixed(2)}小时 = $${(empData.hourlyRate * 1.10 * empData.otNight).toFixed(2)}</li>` : ''}
+                    </ul>
+                    <p style="margin-top:15px;"><strong>加班费总计：</strong> $${(
+                        (empData.hourlyRate * 1.25 * empData.otWeekday) +
+                        (empData.hourlyRate * 1.30 * empData.otRestday) +
+                        (empData.hourlyRate * 2.00 * empData.otHoliday) +
+                        (empData.hourlyRate * 1.30 * empData.otSpecial) +
+                        (empData.hourlyRate * 1.10 * empData.otNight)
+                    ).toFixed(2)}</p>`
+                }
+            },
+            month13: {
+                en: {
+                    title: "13th Month Pay",
+                    content: '<p>Your 13th month pay is prorated based on months worked. It is calculated based on your accumulated Year-to-Date (YTD) basic salary divided by 12.</p>'
+                },
+                cn: {
+                    title: "13薪",
+                    content: '<p>您的13薪根据已工作月数按比例计算，计算方式为您的年初至今（YTD）累计基本工资除以12。</p>'
+                }
+            },
+            sickLeave: {
+                en: {
+                    title: "Sick Leave Conversion",
+                    content: `<p>Unused sick leave hours converted to cash payment.</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    Calculation:<br>
+                    Hourly Rate × Sick Leave Hours<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.sickHrs.toFixed(2)} hrs = $${(empData.hourlyRate * empData.sickHrs).toFixed(2)}
+                    </div>
+                    <p style="margin-top:15px;">Conversion rate is based on your hourly rate.</p>`
+                },
+                cn: {
+                    title: "病假折算",
+                    content: `<p>未使用的病假小时数折算为现金发放。</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    计算方式：<br>
+                    时薪 × 病假小时数<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.sickHrs.toFixed(2)}小时 = $${(empData.hourlyRate * empData.sickHrs).toFixed(2)}
+                    </div>
+                    <p style="margin-top:15px;">折算比率基于您的时薪。</p>`
+                }
+            },
+            adjustment: {
+                en: {
+                    title: "Adjustment",
+                    content: `<p>${empData.remarkAdj}</p>`
+                },
+                cn: {
+                    title: "调整",
+                    content: `<p>${empData.remarkAdj}</p>`
+                }
+            },
+            postAllowance: {
+                en: {
+                    title: "Post Allowance",
+                    content: `<p>This is 50% of your monthly post allowance, paid in this period.</p><p style="margin-top:15px;"><strong>Monthly Post Allowance:</strong> $${empData.postMonthly.toFixed(2)}</p>`
+                },
+                cn: {
+                    title: "岗位津贴",
+                    content: `<p>这是您月岗位津贴的50%，在本期发放。</p><p style="margin-top:15px;"><strong>月岗位津贴：</strong> $${empData.postMonthly.toFixed(2)}</p>`
+                }
+            },
+            housingAllow: {
+                en: {
+                    title: "Housing Allowance",
+                    content: `<p>Monthly housing allowance (PHP) will be converted to USD for USDT accounts, otherwise, it will be paid in PHP (Prorated if it is applicable).</p>
+                    <p style="margin-top:15px;"><strong>Exchange Rate:</strong> ₱61.5/USD</p>`
+                },
+                cn: {
+                    title: "住房津贴",
+                    content: `<p>月度住房津贴（PHP）将为USDT账户转换为USD，否则以PHP支付（如适用将按比例计算）。</p>
+                    <p style="margin-top:15px;"><strong>汇率：</strong> ₱61.5/USD</p>`
+                }
+            },
+            familyAllow: {
+                en: {
+                    title: "Family Allowance",
+                    content: `<p>Family Allowance (PHP) will be converted to USD for USDT accounts, otherwise, it will be paid in PHP (Prorated if it is applicable).</p>
+                    <p style="margin-top:15px;"><strong>Exchange Rate:</strong> ₱61.5/USD</p>`
+                },
+                cn: {
+                    title: "家庭津贴",
+                    content: `<p>家庭津贴（PHP）将为USDT账户转换为USD，否则以PHP支付（如适用将按比例计算）。</p>
+                    <p style="margin-top:15px;"><strong>汇率：</strong> ₱61.5/USD</p>`
+                }
+            },
+            educationAllow: {
+                en: {
+                    title: "Education Allowance",
+                    content: `<p>Education Allowance (PHP) will be converted to USD for USDT accounts, otherwise, it will be paid in PHP (Prorated if it is applicable).</p>
+                    <p style="margin-top:15px;"><strong>Exchange Rate:</strong> ₱61.5/USD</p>`
+                },
+                cn: {
+                    title: "教育津贴",
+                    content: `<p>教育津贴（PHP）将为USDT账户转换为USD，否则以PHP支付（如适用将按比例计算）。</p>
+                    <p style="margin-top:15px;"><strong>汇率：</strong> ₱61.5/USD</p>`
+                }
+            },
+            airTicket: {
+                en: {
+                    title: "Air Ticket",
+                    content: '<p>The Air Ticket allowance is USD 1,200 for employees at job grade A and above, and USD 800 for job grade B/C/D employees.</p><p style="margin-top:15px;">The allowance is paid semi-annually, with half of the annual amount paid each time (i.e. on January 5 and July 5 each year). Employees must be actively employed on the payout date to be eligible for the allowance.</p>'
+                },
+                cn: {
+                    title: "机票补贴",
+                    content: '<p>机票补贴为A级及以上职级员工1,200美元，B/C/D职级员工800美元。</p><p style="margin-top:15px;">该补贴每半年发放一次，每次发放年度金额的一半（即每年1月5日和7月5日）。员工必须在发放日当天在职才有资格领取该补贴。</p>'
+                }
+            },
+            incentiveBonus: {
+                en: {
+                    title: "Incentive Bonus",
+                    content: '<p>For details, please contact your direct supervisor / manager or HRBP.</p>'
+                },
+                cn: {
+                    title: "激励奖金",
+                    content: '<p>详情请联系您的直属主管/经理或HRBP。</p>'
+                }
+            },
+            whTax: {
+                en: {
+                    title: "Withholding Tax",
+                    content: '<p>Income tax withheld based on Philippine BIR tax tables.</p>'
+                },
+                cn: {
+                    title: "预扣所得税",
+                    content: '<p>根据菲律宾BIR税率表预扣的所得税。</p>'
+                }
+            },
+            sss: {
+                en: {
+                    title: "SSS Contribution",
+                    content: `<p>Social Security System (SSS) contribution.</p><p style="margin-top:15px;"><strong>Note:</strong> This is deducted in P2 only (once per month).</p>`
+                },
+                cn: {
+                    title: "SSS社保",
+                    content: `<p>社会保险系统(SSS)缴费。</p><p style="margin-top:15px;"><strong>注意：</strong>仅在P2扣除（每月一次）。</p>`
+                }
+            },
+            tardyUndertime: {
+                en: {
+                    title: "Tardy/Undertime",
+                    content: `<p>Deduction for tardy/undertime hours during this pay period. For attendance details, please access the Bipo system.</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    Calculation:<br>
+                    Hourly Rate × Tardy/Undertime Hours<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.tardyHrs.toFixed(2)} hrs = $${(empData.hourlyRate * empData.tardyHrs).toFixed(2)}
+                    </div>
+                    ${empData.tardyRemark ? `<p style="margin-top:15px;">${empData.tardyRemark}</p>` : ''}
+                    <p style="margin-top:15px;">Calculated based on your hourly rate.</p>`
+                },
+                cn: {
+                    title: "迟到/早退",
+                    content: `<p>本期内迟到/早退的小时数扣款。考勤详情请访问Bipo系统。</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    计算方式：<br>
+                    时薪 × 迟到/早退小时数<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.tardyHrs.toFixed(2)}小时 = $${(empData.hourlyRate * empData.tardyHrs).toFixed(2)}
+                    </div>
+                    ${empData.tardyRemark ? `<p style="margin-top:15px;">${empData.tardyRemark}</p>` : ''}
+                    <p style="margin-top:15px;">按您的时薪计算。</p>`
+                }
+            },
+            unpaidLeave: {
+                en: {
+                    title: "Unpaid Leave",
+                    content: `<p>Deduction for hours of unpaid leave taken during this pay period. For attendance details, please access the Bipo system.</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    Calculation:<br>
+                    Hourly Rate × Unpaid Leave Hours<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.ulHrs.toFixed(2)} hrs = $${(empData.hourlyRate * empData.ulHrs).toFixed(2)}
+                    </div>
+                    ${empData.unpaidRemark ? `<p style="margin-top:15px;">${empData.unpaidRemark}</p>` : ''}
+                    <p style="margin-top:15px;">Calculated based on your hourly rate.</p>`
+                },
+                cn: {
+                    title: "无薪假",
+                    content: `<p>本期内请无薪假的小时数扣款。考勤详情请访问Bipo系统。</p>
+                    <div class="calc-block" style="margin-top:15px;">
+                    计算方式：<br>
+                    时薪 × 无薪假小时数<br>
+                    $${empData.hourlyRate.toFixed(2)} × ${empData.ulHrs.toFixed(2)}小时 = $${(empData.hourlyRate * empData.ulHrs).toFixed(2)}
+                    </div>
+                    ${empData.unpaidRemark ? `<p style="margin-top:15px;">${empData.unpaidRemark}</p>` : ''}
+                    <p style="margin-top:15px;">按您的时薪计算。</p>`
+                }
+            },
+            others: {
+                en: {
+                    title: "Others",
+                    content: `<p>${empData.othersRemark}</p>`
+                },
+                cn: {
+                    title: "其他",
+                    content: `<p>${empData.othersRemark}</p>`
+                }
+            },
+            otherDed: {
+                en: {
+                    title: "Other Deductions",
+                    content: `<p>${empData.otherDedRemark}</p>`
+                },
+                cn: {
+                    title: "其他扣款",
+                    content: `<p>${empData.otherDedRemark}</p>`
+                }
+            },
+            visaDed: {
+                en: {
+                    title: "Visa Deduction",
+                    content: '<p>For details, please contact Visa Team.</p>'
+                },
+                cn: {
+                    title: "签证扣款",
+                    content: '<p>详情请联系Visa Team。</p>'
+                }
+            },
+            adminDed: {
+                en: {
+                    title: "Admin Deduction",
+                    content: '<p>For details, please contact Admin Team.</p>'
+                },
+                cn: {
+                    title: "行政扣款",
+                    content: '<p>详情请联系Admin Team。</p>'
+                }
+            },
+            grossSalary: {
+                en: {
+                    title: "Gross Salary",
+                    content: '<p>Sum of all income items for this pay period.</p><p style="margin-top:15px;"><strong>Note:</strong> PHP allowances are converted to USD at ₱61.5/USD and included in this amount.</p>'
+                },
+                cn: {
+                    title: "应发工资总额",
+                    content: '<p>本期所有收入项目的总和。</p><p style="margin-top:15px;"><strong>备注：</strong>PHP津贴已按₱61.5/USD汇率转换为USD并计入此金额。</p>'
+                }
+            },
+            totalDeduction: {
+                en: {
+                    title: "Total Deduction",
+                    content: '<p>Sum of all deductions from your gross salary.</p>'
+                },
+                cn: {
+                    title: "总扣除额",
+                    content: '<p>从应发工资中扣除的所有项目总和。</p>'
+                }
+            },
+            netPay: {
+                en: {
+                    title: "Net Pay",
+                    content: '<p>Your take-home pay for this period.</p><div class="calc-block" style="margin-top:20px;">Net Pay = Gross Salary - Total Deduction</div>'
+                },
+                cn: {
+                    title: "实发工资",
+                    content: '<p>您本期的实际到手工资。</p><div class="calc-block" style="margin-top:20px;">实发工资 = 应发工资总额 - 总扣除额</div>'
+                }
+            }
+        };
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (input === empData.password) {
+                document.getElementById('passwordScreen').style.display = 'none';
+                document.getElementById('payslipContent').style.display = 'block';
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function setLang(lang) {
+            document.body.className = lang === 'cn' ? 'lang-cn' : '';
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function showDetail(detailKey) {
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const currentLang = document.body.classList.contains('lang-cn') ? 'cn' : 'en';
+
+            if (details[detailKey]) {
+                const detail = details[detailKey][currentLang];
+                modalTitle.textContent = detail.title;
+                modalBody.innerHTML = detail.content;
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'detailModal') {
+                document.getElementById('detailModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 页面加载时更新Hourly Rate显示
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('hourlyRateDisplay').textContent = '$' + empData.hourlyRate.toFixed(2);
+        });
+    </script>
+</body>
+</html>
